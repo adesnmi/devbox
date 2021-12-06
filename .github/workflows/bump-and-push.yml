@@ -82,6 +82,10 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: 'Get tag'
+        id: git-tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+
       - name: Check Dockerfile has changed
         id: dockerfile-changed
         uses: tj-actions/changed-files@v11.9
@@ -109,5 +113,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ github.actor }}/devbox:$(git describe --tags --abbrev=0)
+          tags: ${{ env.REGISTRY }}/${{ github.actor }}/devbox:${{ steps.git-tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
