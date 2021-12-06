@@ -71,6 +71,7 @@ RUN apt-get install -y diff-so-fancy
 # User changes
 USER ${USERNAME}
 
+
 # Ruby
 RUN sudo apt-get -y install rbenv
 
