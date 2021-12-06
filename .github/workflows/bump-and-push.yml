@@ -1,0 +1,69 @@
+name: Bump and deploy image
+on:
+  push:
+    branches: ['main']
+jobs:
+  bump-version:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          release_branches: 'main'
+          default_bump: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        if: steps.tag_version.outputs.new_tag
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+
+  build-and-push-latest:
+    needs: bump-version
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: read
+      packages: write
+    env: 
+      REGISTRY: https://ghcr.io
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Check Dockerfile has changed
+        id: dockerfile-changed
+        uses: tj-actions/changed-files@v11.9
+        with:
+          files: 'Dockerfile'
+
+      - name: Log in to the Container registry
+        if: steps.dockerfile-changed.outputs.any_changed == 'true'
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        if: steps.dockerfile-changed.outputs.any_changed == 'true'
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push latest Docker image
+        if: steps.dockerfile-changed.outputs.any_changed == 'true'
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          push: true
+          tags: muyiwaolu/devbox:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
