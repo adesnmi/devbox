@@ -72,7 +72,6 @@ RUN apt-get install -y diff-so-fancy
 USER ${USERNAME}
 
 # Ruby
-
 RUN sudo apt-get -y install rbenv
 
 RUN git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
