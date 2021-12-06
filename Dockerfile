@@ -85,7 +85,7 @@ WORKDIR ${DOTFILES_DIR}
 RUN mkdir -p /home/${USERNAME}/.config/nvim
 RUN ./install
 
-# Initialise neovim
+# Initialise Neovim
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 RUN nvim --headless -c 'quitall'
 
