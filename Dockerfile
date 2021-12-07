@@ -71,6 +71,9 @@ RUN apt-get install -y diff-so-fancy
 # User changes
 USER ${USERNAME}
 
+# Run docker without sudo
+RUN sudo usermod -aG docker ${USERNAME}
+
 # Ruby
 RUN sudo apt-get -y install rbenv
 
