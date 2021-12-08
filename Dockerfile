@@ -88,6 +88,8 @@ WORKDIR ${DOTFILES_DIR}
 RUN mkdir -p /home/${USERNAME}/.config/nvim
 RUN ./install
 
+COPY templates/gitconfig.local.template /home/${USERNAME}/.gitconfig.local
+
 # Initialise Neovim
 RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 RUN nvim --headless -c 'quitall'
