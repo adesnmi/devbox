@@ -13,7 +13,7 @@ ARG USERNAME=muyiwa
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-ARG RUBY_3_VERSION="3.0.3"
+ARG RUBY_3_VERSION="3.1.3"
 
 ARG DOTFILES_DIR=/home/${USERNAME}/.dotfiles
 
@@ -61,13 +61,6 @@ USER ${USERNAME}
 # Run docker without sudo
 RUN sudo usermod -aG docker ${USERNAME}
 
-# Ruby
-RUN sudo apt-get -y install rbenv
-
-RUN git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
-RUN rbenv install ${RUBY_3_VERSION}
-RUN rbenv global ${RUBY_3_VERSION}
-
 # Dotfiles
 ADD https://api.github.com/repos/adesnmi/dotfiles/commits?per_page=1 cache_skip
 RUN git clone https://github.com/adesnmi/dotfiles ${DOTFILES_DIR}
@@ -85,8 +78,12 @@ RUN echo "source $HOME/.nvm/nvm.sh && \
 
 RUN echo "source $HOME/.nvm/nvm.sh && npm install --global yarn" | zsh
 
-# Deno
-RUN curl -fsSL https://deno.land/x/install/install.sh | sh
+# Ruby
+RUN sudo apt-get -y install rbenv
+
+RUN git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-build
+RUN rbenv install ${RUBY_3_VERSION}
+RUN rbenv global ${RUBY_3_VERSION}
 
 # End up back at 🏡
 WORKDIR /home/${USERNAME}
