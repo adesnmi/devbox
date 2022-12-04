@@ -13,4 +13,4 @@ A development environment tailored for modern web development, with a focus on R
 
 ## Configuration
 
-* [muyiwaolu/dotfiles](https://github.com/muyiwaolu/dotfiles)
+* [adesnmi/dotfiles](https://github.com/adesnmi/dotfiles)
