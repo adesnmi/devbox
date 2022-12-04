@@ -1,1 +1,1 @@
-docker build . -t ghcr.io/muyiwaolu/devbox:$(git describe --tags --abbrev=0)
+docker build . -t ghcr.io/adesnmi/devbox:$(git describe --tags --abbrev=0)

@@ -4,7 +4,7 @@ ARG VARIANT="focal"
 FROM buildpack-deps:${VARIANT}-curl
 
 # Labels
-LABEL org.opencontainers.image.source = "https://github.com/muyiwaolu/devbox"
+LABEL org.opencontainers.image.source = "https://github.com/adesnmi/devbox"
 
 # Args
 ARG INSTALL_ZSH="true"
@@ -22,7 +22,7 @@ ARG DOTFILES_DIR=/home/${USERNAME}/.dotfiles
 
 # Install needed packages and setup non-root user. Use a separate RUN statement to add your own dependencies.
 COPY scripts/*.sh scripts/*.env /tmp/scripts/
-RUN yes | unminimize 2>&1 \ 
+RUN yes | unminimize 2>&1 \
   && bash /tmp/scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "true" "true" \
   && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/scripts
 
@@ -82,8 +82,8 @@ RUN rbenv install ${RUBY_3_VERSION}
 RUN rbenv global ${RUBY_3_VERSION}
 
 # Dotfiles
-ADD https://api.github.com/repos/muyiwaolu/dotfiles/commits?per_page=1 cache_skip
-RUN git clone https://github.com/muyiwaolu/dotfiles ${DOTFILES_DIR}
+ADD https://api.github.com/repos/adesnmi/dotfiles/commits?per_page=1 cache_skip
+RUN git clone https://github.com/adesnmi/dotfiles ${DOTFILES_DIR}
 WORKDIR ${DOTFILES_DIR}
 RUN mkdir -p /home/${USERNAME}/.config/nvim
 RUN ./install
