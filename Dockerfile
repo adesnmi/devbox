@@ -13,9 +13,6 @@ ARG USERNAME=muyiwa
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-ARG NEOVIM_VERSION=stable
-ARG NEOVIM_BUILD_DIR=/tmp/nvim-build-${NEOVIM_VERSION}
-
 ARG RUBY_3_VERSION="3.0.3"
 
 ARG DOTFILES_DIR=/home/${USERNAME}/.dotfiles
@@ -34,16 +31,6 @@ RUN apt-get update
 RUN apt-get -y install software-properties-common
 RUN apt-get -y install gawk
 RUN apt-get -y install autoconf bison build-essential dirmngr libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev
-
-# Install nvim build deps
-RUN sudo apt-get -y install ninja-build gettext libtool libtool-bin automake cmake g++ pkg-config unzip curl doxygen
-
-# Clone repo and build within its context
-RUN git clone https://github.com/neovim/neovim ${NEOVIM_BUILD_DIR}
-WORKDIR ${NEOVIM_BUILD_DIR}
-RUN git checkout ${NEOVIM_VERSION}
-RUN make -j4
-RUN make install
 
 WORKDIR /home/${USERNAME}
 
@@ -85,14 +72,9 @@ RUN rbenv global ${RUBY_3_VERSION}
 ADD https://api.github.com/repos/adesnmi/dotfiles/commits?per_page=1 cache_skip
 RUN git clone https://github.com/adesnmi/dotfiles ${DOTFILES_DIR}
 WORKDIR ${DOTFILES_DIR}
-RUN mkdir -p /home/${USERNAME}/.config/nvim
 RUN ./install
 
 COPY templates/gitconfig.local.template /home/${USERNAME}/.gitconfig.local
-
-# Initialise Neovim
-RUN nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
-RUN nvim --headless -c 'quitall'
 
 # Node
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | zsh
@@ -102,6 +84,9 @@ RUN echo "source $HOME/.nvm/nvm.sh && \
     nvm use 16" | zsh
 
 RUN echo "source $HOME/.nvm/nvm.sh && npm install --global yarn" | zsh
+
+# Deno
+RUN curl -fsSL https://deno.land/x/install/install.sh | sh
 
 # End up back at 🏡
 WORKDIR /home/${USERNAME}
